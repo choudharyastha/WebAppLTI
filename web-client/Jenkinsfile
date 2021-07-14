@@ -8,8 +8,8 @@ pipeline {
                 sh 'git checkout dev'
                 sh 'cd web-client && npm install'
                 sh 'cd web-client && npm run build'
-                withAWS(region:'ap-south-1', credentials:'awsIAM') {
-                    s3Upload(bucket: 'reactjsdev', file:'web-client/build/')
+                withAWS(region:'ap-south-1', credentials:'asthachoudhary') {
+                    s3Upload(bucket: 'reactbucket-dev', file:'web-client/build/')
                 }
                 emailext attachLog: true, body: 'Proceed or abort the deployment process at $RUN_DISPLAY_URL.', to : 'patelmurtuzas@gmail.com; vineet.bakshi@gmail.com', recipientProviders: [developers()], subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - Permission required for deploying to production.'
             }
@@ -20,9 +20,9 @@ pipeline {
             }
             steps {
                 sh 'echo "production build started"'
-                 withAWS(region:'ap-south-1', credentials:'awsIAM') {
-                    s3Download bucket: 'reactjsdev', file:'web-client/build/', force: true
-                    s3Upload bucket: 'reactjsprod', file:'web-client/build/' 
+                 withAWS(region:'ap-south-1', credentials:'asthachoudhary') {
+                    s3Download bucket: 'reactbucket-dev', file:'web-client/build/', force: true
+                    s3Upload bucket: 'reactbucket-prod', file:'web-client/build/' 
                 }
                 emailext attachLog: true, body: 'We have successfully deployed to production, you can review the build console from the attached file. $RUN_DISPLAY_URL.', to : 'patelmurtuzas@gmail.com; vineet.bakshi@gmail.com', recipientProviders: [developers()], subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - Permission required for deploying to production.'
             }
@@ -34,14 +34,14 @@ pipeline {
                 sh 'git pull'
                 sh 'git merge dev'
                 withCredentials([usernamePassword(credentialsId: 'githubId', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
-                    sh('git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/patelmurtuza/WebAppLTI' )
+                    sh('git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/choudharyastha/WebAppLTI' )
                 }
             }
       }
     }
     post {
         aborted {
-            sh 'echo  "Do something here whichc need to be executed if build is aborted"'
+            sh 'echo  "Do something here which need to be executed if build is aborted"'
         }
     // Clean after build
         always {
