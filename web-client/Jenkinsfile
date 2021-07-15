@@ -11,7 +11,7 @@ pipeline {
                 withAWS(region:'ap-south-1', credentials:'asthachoudhary') {
                     s3Upload(bucket: 'reactbucket-dev', file:'web-client/build/')
                 }
-                emailext attachLog: true, body: 'Proceed or abort the deployment process at $RUN_DISPLAY_URL.', to : 'patelmurtuzas@gmail.com; vineet.bakshi@gmail.com', recipientProviders: [developers()], subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - Permission required for deploying to production.'
+                emailext attachLog: true, body: 'Proceed or abort the deployment process at $RUN_DISPLAY_URL.', to : 'patelmurtuzas@gmail.com; vineet.bakshi@gmail.com; choudharyastha81@gmail.com', recipientProviders: [developers()], subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - Permission required for deploying to production.'
             }
         }
         stage('Deploy to production') {
@@ -24,7 +24,7 @@ pipeline {
                     s3Download bucket: 'reactbucket-dev', file:'web-client/build/', force: true
                     s3Upload bucket: 'reactbucket-prod', file:'web-client/build/' 
                 }
-                emailext attachLog: true, body: 'We have successfully deployed to production, you can review the build console from the attached file. $RUN_DISPLAY_URL.', to : 'patelmurtuzas@gmail.com; vineet.bakshi@gmail.com', recipientProviders: [developers()], subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - Permission required for deploying to production.'
+                emailext attachLog: true, body: 'We have successfully deployed to production, you can review the build console from the attached file. $RUN_DISPLAY_URL.', to : 'patelmurtuzas@gmail.com; vineet.bakshi@gmail.com; choudharyastha81@gmail.com', recipientProviders: [developers()], subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - Permission required for deploying to production.'
             }
         }
         stage("Commit changes back to production repo"){
