@@ -14,11 +14,11 @@ pipeline {
         stage('Deploy to EB - development'){
             steps{
                 step([$class: 'AWSEBDeploymentBuilder',
-                    credentialId: 'awsIAM',
+                    credentialId: 'asthachoudhary',
                     awsRegion: 'ap-south-1',
                     maxAttempts: 30,
-                    applicationName: 'MicroservicePOC',
-                    environmentName: 'Microservicepoc-env',
+                    applicationName: 'DevOpsDotNET',
+                    environmentName: 'DevOpsDotNET-env',
                     rootObject: 'devops_api/deploymentpackage.zip',
                     versionLabelFormat: '${BUILD_NUMBER}-${BUILD_TAG}',
                     sleepTime: 90,
@@ -31,7 +31,7 @@ pipeline {
               message 'Do you want to proceed ??'
             }
             steps{
-                withAWS(region:'ap-south-1', credentials:'awsIAM') {
+                withAWS(region:'ap-south-1', credentials:'asthachoudhary') {
                     s3Download bucket: 'elasticbeanstalk-ap-south-1-176983216772', file:'devops_api/dev_builds/'
                 }
                 step([$class: 'AWSEBDeploymentBuilder',
@@ -54,7 +54,7 @@ pipeline {
                 sh 'git pull'
                 sh 'git merge dev'
                 withCredentials([usernamePassword(credentialsId: 'githubId', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
-                    sh('git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/patelmurtuza/WebAppLTI' )
+                    sh('git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/choudharyastha/WebAppLTI' )
                 }
             }
         }
