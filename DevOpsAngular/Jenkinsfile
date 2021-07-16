@@ -5,6 +5,7 @@ pipeline {
         stage('Deploy to development') { 
             steps {
                 sh 'echo "Add build steps here"'
+                sh 'git checkout dev'
                 sh 'cd DevOpsAngular && npm install'
                 sh 'cd DevOpsAngular && ng build --prod'
                 withAWS(region:'ap-south-1', credentials:'asthachoudhary') {
@@ -28,8 +29,9 @@ pipeline {
         }
         stage("Commit changes back to production repo"){
             steps{
-                sh 'git checkout --track origin/dev'
+                //sh 'git checkout --track origin/dev'
                 sh 'git checkout --track origin/master'
+                sh 'git pull'
                 sh 'git merge dev'
                 withCredentials([usernamePassword(credentialsId: 'githubId', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
                     sh('git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/asthachoudhary/WebAppLTI' )
