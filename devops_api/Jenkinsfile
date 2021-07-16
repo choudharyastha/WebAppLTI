@@ -33,14 +33,17 @@ pipeline {
             steps{
                 withAWS(region:'ap-south-1', credentials:'asthachoudhary') {
                     s3Download bucket: 'elasticbeanstalk-ap-south-1-819715243768', file:'devops_api/dev_builds/'
+                    
                 }
+                sh 'ls devops_api/dev_builds'
+                sh 'ls devops_api/dev_builds/null'
                 step([$class: 'AWSEBDeploymentBuilder',
                     credentialId: 'asthachoudhary',
                     awsRegion: 'ap-south-1',
                     maxAttempts: 30,
                     applicationName: 'DevOpsDotNETprod',
                     environmentName: 'Devopsdotnetprod-env',
-                    rootObject: 'devops_api/dev_builds/null/DevOpsDotNETprod-${BUILD_NUMBER}-${BUILD_TAG}.zip',
+                    rootObject: 'devops_api/dev_builds/null/DevOpsDotNET-${BUILD_NUMBER}-${BUILD_TAG}.zip',
                     versionLabelFormat: '${BUILD_NUMBER}-${BUILD_TAG}-prod',
                     sleepTime: 90,
                     checkHealth: true
