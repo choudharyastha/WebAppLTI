@@ -31,16 +31,16 @@ pipeline {
                 sh 'git checkout --track origin/dev'
                 sh 'git checkout --track origin/master'
                 sh 'git merge dev'
-                withCredentials([usernamePassword(credentialsId: 'asthachoudhary', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
-                    sh('git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/asthachoudhary/TryAtJenkins' )
+                withCredentials([usernamePassword(credentialsId: 'githubId', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+                    sh('git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/asthachoudhary/WebAppLTI' )
                 }
             }
         }
     }
-    // post {
-    // // Clean after build
-    //     always {
-    //         cleanWs()
-    //     }
-    // }
+     post {
+    // Clean after build
+         always {
+             cleanWs()
+         }
+     }
 }
