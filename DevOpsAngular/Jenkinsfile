@@ -8,7 +8,7 @@ pipeline {
                 sh 'cd DevOpsAngular && npm install'
                 sh 'cd DevOpsAngular && ng build --prod'
                 withAWS(region:'ap-south-1', credentials:'asthachoudhary') {
-                    s3Upload(bucket: 'angularbucket-demo', file:'DevOpsAngular/dist/DevOpsAngular')
+                    s3Upload(bucket: 'angularbucket-dev', file:'DevOpsAngular/dist/DevOpsAngular')
                 }
                 emailext attachLog: true, body: 'Proceed or abort the deployment process at $RUN_DISPLAY_URL.', to: 'choudharyastha81@gmail.com', recipientProviders: [developers()], subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - Permission required for deploying to production.'
              }
