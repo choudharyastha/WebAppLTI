@@ -1,0 +1,65 @@
+pipeline {
+    agent any
+    stages {
+        stage('Build'){ 
+            steps {
+                sh "git checkout dev"
+                sh 'cd devops_api && dotnet restore'
+                sh 'cd devops_api && dotnet build'
+                sh 'cd devops_api && dotnet publish -o Release'
+            }
+        }
+        stage('Build and push docker image'){
+            steps{
+                sh 'docker logout'
+                sh "docker build -t devops_api:${env.BUILD_ID} ./devops_api"
+                withCredentials([usernamePassword(credentialsId: 'dockercredentials', passwordVariable: 'PASSWORD', usernameVariable: 'USER')]) {
+                    sh "docker login -u ${USER} --password ${PASSWORD}"
+                    sh "docker tag devops_api:${env.BUILD_ID} ${USER}/devops_api:${env.BUILD_ID}"
+                    sh "docker push ${USER}/devops_api:${env.BUILD_ID}"
+                }
+            }
+        }
+        stage('Deploy to development'){
+            steps{
+                script{
+                    withCredentials([sshUserPrivateKey(credentialsId: 'devEC2sever', keyFileVariable: 'identity', passphraseVariable: '', usernameVariable: 'userName')]) {
+                        def remote = [:]
+                        remote.name = 'EC2dev'
+                        remote.host = 'ec2-13-127-242-92.ap-south-1.compute.amazonaws.com'
+                        remote.allowAnyHosts = true
+                        remote.user = userName
+                        remote.identityFile = identity
+                        sshCommand remote: remote, command: "docker pull astha08/devops_api:${env.BUILD_ID}"
+                        sshCommand remote: remote, command: "docker stop container1"
+                        sshCommand remote: remote, command: "docker rm container1"
+                        sshCommand remote: remote, command: "docker create -p 5000:80 --name container1 astha08/devops_api:${env.BUILD_ID}"
+                        sshCommand remote: remote, command: "docker start container1"
+                    }
+                }
+            }
+
+        }
+        stage("Commit changes back to production repo"){
+            steps{
+                // sh 'git checkout --track origin/dev'
+                sh 'git checkout --track origin/master'
+                sh 'git pull'
+                sh 'git merge dev'
+                withCredentials([usernamePassword(credentialsId: 'gitId', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+                    sh('git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/choudharyastha/WebAppLTI' )
+                }
+            }
+        }
+    }
+    post {
+    // Clean after build
+        always {
+            cleanWs()
+        }
+    //Do this if the pipeline was aborted
+        aborted{
+            echo "The pipeline was aborted!!"
+        }
+    }
+}
