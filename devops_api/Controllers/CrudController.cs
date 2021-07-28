@@ -11,8 +11,8 @@ namespace devops_test_api.Controllers
     [Route("api/person")]
     public class CrudController: ControllerBase
     {
-        private static List<Person> persons = new List<Person> { 
-               new Person {person_id = 1, balance =  1000, name  =  "Anurag Agrawal", email_id = "anurag.agrawal@lntinfotech.com" },
+        private static List<Person> persons = new List<Person>{
+        new Person {person_id = 1, balance =  1000, name  =  "Anurag Agrawal", email_id = "anurag.agrawal@lntinfotech.com" },
                new Person {person_id = 2, balance =  1000, name  =  "Murtuza Patel", email_id = "murtuza.patel@lntinfotech.com" },
                new Person {person_id = 3, balance =  1000, name  =  "Vineet Bakshi", email_id = "vineet.bakshi@lntinfotech.com" },
                new Person {person_id = 4, balance =  1000, name  =  "Astha Chaudhary", email_id = "astha.chaudhary@lntinfotech.com" }
